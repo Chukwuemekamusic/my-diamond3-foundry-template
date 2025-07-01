@@ -1,66 +1,73 @@
-## Foundry
+# Diamond-3 Foundry Template
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+A template and guide for building EIP-2535 Diamond Standard contracts using [Foundry](https://book.getfoundry.sh/).
 
-Foundry consists of:
+## Overview
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+This repository provides a modular smart contract architecture using the Diamond Standard (EIP-2535), implemented with the Foundry toolchain. It includes example facets, deployment scripts, and tests to help you get started quickly.
 
-## Documentation
+## Structure
 
-https://book.getfoundry.sh/
+- `src/` — Core contracts (Diamond, Facets, Libraries, Interfaces)
+- `script/` — Deployment and upgrade scripts
+- `test/` — Foundry tests
 
-## Usage
+## Getting Started
 
-### Build
+### Prerequisites
 
-```shell
-$ forge build
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) installed (`forge`, `anvil`)
+- Node.js and npm (for some scripts, optional)
+
+### Install Dependencies
+
+```sh
+forge install
 ```
 
-### Test
+### Build Contracts
 
-```shell
-$ forge test
+```sh
+forge build
 ```
 
-### Format
+### Run Local Node
 
-```shell
-$ forge fmt
+```sh
+anvil
 ```
 
-### Gas Snapshots
+### Deploy Diamond
 
-```shell
-$ forge snapshot
+Simulate deployment (dry run):
+
+```sh
+forge script script/Diamond.s.sol:DeployScript --rpc-url http://127.0.0.1:8545 -vvvv
 ```
 
-### Anvil
+Broadcast deployment (actually deploys):
 
-```shell
-$ anvil
+```sh
+forge script script/Diamond.s.sol:DeployScript --rpc-url http://127.0.0.1:8545 --private-key <YOUR_KEY> --broadcast -vvvv
 ```
 
-### Deploy
+### Run Tests
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+```sh
+forge test -vvv
 ```
 
-### Cast
+## Customization
 
-```shell
-$ cast <subcommand>
-```
+- Add new facets in `src/facets/`
+- Update deployment scripts in `script/`
+- Write tests in `test/`
 
-### Help
+## References
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+- [EIP-2535 Diamond Standard](https://eips.ethereum.org/EIPS/eip-2535)
+- [Foundry Book](https://book.getfoundry.sh/)
+
+---
+
+_This is a template. Adapt it to your project as needed!_
