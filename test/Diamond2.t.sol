@@ -115,20 +115,20 @@ contract DiamondTest is Test {
 
     function testOwnershipTransfer() public {
         OwnershipFacet ownership = OwnershipFacet(address(diamond));
-        
+
         // Initial owner
         assertEq(ownership.owner(), owner);
-        
+
         // Transfer ownership
         vm.prank(owner);
         ownership.transferOwnership(user1);
         assertEq(ownership.owner(), user1);
-        
+
         // Only new owner can transfer
         vm.prank(owner);
         vm.expectRevert(abi.encodeWithSelector(LibDiamond.NotContractOwner.selector, owner, user1));
         ownership.transferOwnership(user2);
-        
+
         // New owner can transfer
         vm.prank(user1);
         ownership.transferOwnership(user2);
@@ -137,23 +137,23 @@ contract DiamondTest is Test {
 
     function testLoupeFunctions() public {
         IDiamondLoupe loupe = IDiamondLoupe(address(diamond));
-        
+
         // Test facetAddresses
         address[] memory addresses = loupe.facetAddresses();
         assertEq(addresses.length, 4);
-        
+
         // Test facets
         IDiamondLoupe.Facet[] memory facets = loupe.facets();
         assertEq(facets.length, 4);
-        
+
         // Test facetAddress lookup
         address facetAddr = loupe.facetAddress(CounterFacet.increment.selector);
         assertEq(facetAddr, address(counterFacet));
-        
+
         // Test facetFunctionSelectors
         bytes4[] memory selectors = loupe.facetFunctionSelectors(address(counterFacet));
         assertEq(selectors.length, 5);
-        
+
         // Test supportsInterface
         assertTrue(IERC165(address(diamond)).supportsInterface(type(IERC165).interfaceId));
         assertTrue(IERC165(address(diamond)).supportsInterface(type(IDiamondCut).interfaceId));
