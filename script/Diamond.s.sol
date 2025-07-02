@@ -21,9 +21,9 @@ import {IERC173} from "../src/interfaces/IERC173.sol";
 // This Script DOES NOT upgrade the diamond with any of the example facets.
 contract DeployScript is Script {
     function run() external returns (Diamond) {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address owner = vm.envAddress("OWNER_ADDRESS");
-        vm.startBroadcast(deployerPrivateKey);
+        // uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        // address owner = vm.envAddress("OWNER_ADDRESS");
+        vm.startBroadcast();
 
         // Deploy Contracts
         DiamondInit diamondInit = new DiamondInit();
@@ -33,8 +33,7 @@ contract DeployScript is Script {
         CounterFacet counterFacet = new CounterFacet();
 
         // Public address associated with the private key that launched this script is now the owner. (msg.sender).
-        // Diamond diamond = new Diamond(msg.sender, address(diamondCutFacet));
-        Diamond diamond = new Diamond(owner, address(diamondCutFacet));
+        Diamond diamond = new Diamond(msg.sender, address(diamondCutFacet));
         console.log("Deployed Diamond.sol at address:", address(diamond));
 
         // We prepare an array of `cuts` that we want to upgrade our Diamond with.

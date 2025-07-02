@@ -1,20 +1,31 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "forge-std/Script.sol";
+import {Script, console2} from "forge-std/Script.sol";
 import {IDiamondLoupe} from "../src/interfaces/IDiamondLoupe.sol";
+import {CounterFacetV2} from "../src/facets/v2/CounterFacetV2.sol";
 
 contract InspectDiamond is Script {
     // Replace with your deployed diamond address
-    address constant DIAMOND_ADDRESS = 0x5FC8d32690cc91D4c39d9d3abcBD16989F875707;
+    address DIAMOND_ADDRESS = vm.envAddress("DIAMOND_ADDRESS");
 
     function run() external view {
-        console.log("=== DIAMOND INSPECTION ===");
-        console.log("Diamond Address:", DIAMOND_ADDRESS);
-        console.log("");
+        console2.log("=== DIAMOND INSPECTION ===");
+        console2.log("Diamond Address:", DIAMOND_ADDRESS);
+        console2.log("");
 
         inspectFacets();
         inspectSpecificSelectors();
+        bytes4  multiplySelector = CounterFacetV2.multiply.selector;
+        bytes4  incrementSelector = CounterFacetV2.increment.selector;
+
+        address multiplyFacetAddress = findFacetBySelector(multiplySelector);
+        
+
+        address incrementFacetAddress = findFacetBySelector(incrementSelector);
+        console2.log("Increment Selector: Facet Address:", incrementFacetAddress);
+        console2.log("Multiply Selector: Facet Address:", multiplyFacetAddress);
+
     }
 
     function inspectFacets() internal view {
@@ -22,49 +33,55 @@ contract InspectDiamond is Script {
 
         // Get all facet addresses
         address[] memory facetAddresses = loupe.facetAddresses();
-        console.log("Total Facets:", facetAddresses.length);
-        console.log("");
+        console2.log("Total Facets:", facetAddresses.length);
+        console2.log("");
 
         // Inspect each facet
         for (uint256 i = 0; i < facetAddresses.length; i++) {
             address facetAddr = facetAddresses[i];
             bytes4[] memory selectors = loupe.facetFunctionSelectors(facetAddr);
 
-            console.log("Facet", i + 1, ":");
-            console.log("  Address:", facetAddr);
-            console.log("  Functions:", selectors.length);
+            console2.log("Facet", i + 1, ":");
+            console2.log("  Address:", facetAddr);
+            console2.log("  Functions:", selectors.length);
 
             // Log each function selector
             for (uint256 j = 0; j < selectors.length; j++) {
-                console.log("    Selector", j + 1, ":", vm.toString(selectors[j]));
+                console2.log("    Selector", j + 1, ":", vm.toString(selectors[j]));
 
                 // Try to identify common functions
                 if (selectors[j] == 0x1f931c1c) {
-                    console.log("      ^ diamondCut");
+                    console2.log("      ^ diamondCut");
                 } else if (selectors[j] == 0x7a0ed627) {
-                    console.log("      ^ facets");
+                    console2.log("      ^ facets");
                 } else if (selectors[j] == 0x52ef6b2c) {
-                    console.log("      ^ facetAddresses");
+                    console2.log("      ^ facetAddresses");
                 } else if (selectors[j] == 0xadfca15e) {
-                    console.log("      ^ facetFunctionSelectors");
+                    console2.log("      ^ facetFunctionSelectors");
                 } else if (selectors[j] == 0xcdffacc6) {
-                    console.log("      ^ facetAddress");
+                    console2.log("      ^ facetAddress");
                 } else if (selectors[j] == 0x8da5cb5b) {
-                    console.log("      ^ owner");
+                    console2.log("      ^ owner");
                 } else if (selectors[j] == 0xf2fde38b) {
-                    console.log("      ^ transferOwnership");
+                    console2.log("      ^ transferOwnership");
                 } else if (selectors[j] == 0x01ffc9a7) {
-                    console.log("      ^ supportsInterface");
+                    console2.log("      ^ supportsInterface");
                 }
             }
-            console.log("");
+            console2.log("");
         }
+    }
+
+    function findFacetBySelector(bytes4 selector) internal view returns (address) {
+        IDiamondLoupe loupe = IDiamondLoupe(DIAMOND_ADDRESS);
+        address facetAddress = loupe.facetAddress(selector);
+        return facetAddress;
     }
 
     function inspectSpecificSelectors() internal view {
         IDiamondLoupe loupe = IDiamondLoupe(DIAMOND_ADDRESS);
 
-        console.log("=== FUNCTION SELECTOR LOOKUP ===");
+        console2.log("=== FUNCTION SELECTOR LOOKUP ===");
 
         // Check for your example functions
         bytes4[] memory testSelectors = new bytes4[](10);
@@ -97,13 +114,13 @@ contract InspectDiamond is Script {
         for (uint256 i = 0; i < testSelectors.length; i++) {
             address facetAddr = loupe.facetAddress(testSelectors[i]);
             if (facetAddr != address(0)) {
-                console.log(testNames[i], "-> Found at:", facetAddr);
+                console2.log(testNames[i], "-> Found at:", facetAddr);
             } else {
-                console.log(testNames[i], "-> NOT FOUND");
+                console2.log(testNames[i], "-> NOT FOUND");
             }
         }
 
-        console.log("");
-        console.log("=== INSPECTION COMPLETE ===");
+        console2.log("");
+        console2.log("=== INSPECTION COMPLETE ===");
     }
 }
