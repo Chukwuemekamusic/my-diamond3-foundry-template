@@ -6,19 +6,22 @@ import {LibDiamond} from "../../libraries/LibDiamond.sol";
 // CounterFacetV2 - Contains all functions (existing + new)
 contract CounterFacetV2 {
     bytes32 constant COUNTER_STORAGE_POSITION = keccak256("counter.storage");
-    
+
     struct CounterStorage {
         uint256 count;
         mapping(address => uint256) userCounts;
     }
-    
+
     function counterStorage() internal pure returns (CounterStorage storage cs) {
         bytes32 position = COUNTER_STORAGE_POSITION;
-        assembly { cs.slot := position }
+        assembly {
+            cs.slot := position
+        }
     }
-     event CountIncremented(uint256 newCount);
+
+    event CountIncremented(uint256 newCount);
     event CountDecremented(uint256 newCount);
-    
+
     // Existing functions
     function increment() external {
         CounterStorage storage cs = counterStorage();
@@ -46,7 +49,7 @@ contract CounterFacetV2 {
         LibDiamond.enforceIsContractOwner();
         counterStorage().count = _count;
     }
-    
+
     // NEW function in V2
     function multiply(uint256 factor) external {
         CounterStorage storage cs = counterStorage();

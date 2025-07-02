@@ -11,31 +11,26 @@ library LibAppStorage {
     struct AppStorage {
         mapping(address => User) users;
         uint256 totalUsers;
-
         // Token system
         mapping(address => uint256) tokenBalances;
         uint256 totalSupply;
         string tokenName;
         string tokenSymbol;
-
         // Game state
         mapping(address => GameStats) playerStats;
         uint256 totalGamesPlayed;
         address currentChampion;
         uint256 championScore;
-        
         // Global settings
         address admin;
         bool systemPaused;
         uint256 systemFee;
         mapping(address => bool) authorizedOperators;
-        
         // Events/History
         GameEvent[] gameHistory;
         mapping(uint256 => Transaction) transactions;
         uint256 nextTransactionId;
     }
-
 
     struct User {
         string username;
@@ -77,7 +72,7 @@ library LibAppStorage {
         }
     }
 
-     // Helper functions for common operations
+    // Helper functions for common operations
     function isAdmin(address user) internal view returns (bool) {
         return appStorage().admin == user;
     }

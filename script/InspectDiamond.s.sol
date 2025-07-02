@@ -16,16 +16,14 @@ contract InspectDiamond is Script {
 
         inspectFacets();
         inspectSpecificSelectors();
-        bytes4  multiplySelector = CounterFacetV2.multiply.selector;
-        bytes4  incrementSelector = CounterFacetV2.increment.selector;
+        bytes4 multiplySelector = CounterFacetV2.multiply.selector;
+        bytes4 incrementSelector = CounterFacetV2.increment.selector;
 
         address multiplyFacetAddress = findFacetBySelector(multiplySelector);
-        
 
         address incrementFacetAddress = findFacetBySelector(incrementSelector);
         console2.log("Increment Selector: Facet Address:", incrementFacetAddress);
         console2.log("Multiply Selector: Facet Address:", multiplyFacetAddress);
-
     }
 
     function inspectFacets() internal view {
